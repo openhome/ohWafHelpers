@@ -135,7 +135,10 @@ def configure_toolchain(conf):
             conf.env.append_value('LINKFLAGS', ['-m64'])
         if conf.options.dest_platform.startswith('Linux-'):
             conf.env.append_value('LINKFLAGS', ['-pthread'])
-            conf.env.append_value('CXXFLAGS',['-Wno-psabi', '-fPIC'])
+            if os.environ['CC'].endswith('clang'):
+                conf.env.append_value('CXXFLAGS',['-fPIC'])
+            else:
+                conf.env.append_value('CXXFLAGS',['-Wno-psabi', '-fPIC'])
         elif conf.options.dest_platform in ['Mac-x86', 'Mac-x64']:
             if conf.options.dest_platform == 'Mac-x86':
                 conf.env.append_value('CXXFLAGS', ['-arch', 'i386', '-m32'])
