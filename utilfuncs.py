@@ -135,7 +135,8 @@ def configure_toolchain(conf):
             conf.env.append_value('LINKFLAGS', ['-m64'])
         if conf.options.dest_platform.startswith('Linux-'):
             conf.env.append_value('LINKFLAGS', ['-pthread'])
-            if os.environ['CC'].endswith('clang'):
+            if ('CC' in os.environ and os.environ['CC'].endswith('clang')) \
+            or ('CXX' in os.environ and os.environ['CXX'].endswith('clang++')):
                 conf.env.append_value('CXXFLAGS',['-fPIC'])
             else:
                 conf.env.append_value('CXXFLAGS',['-Wno-psabi', '-fPIC'])
