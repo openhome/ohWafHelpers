@@ -112,7 +112,7 @@ def configure_toolchain(conf):
             conf.env.append_value('CFLAGS', ['-std=gnu89'])
             conf.env.append_value('CXXFLAGS', ['-std=c++11', '-D_POSIX_C_SOURCE=199309', '-stdlib=libc++'])
         else:
-            conf.env.append_value('CXXFLAGS', ['-std=c++0x', '-D__STDC_VERSION__=199901L'])
+            conf.env.append_value('CXXFLAGS', ['-std=c++0x'])
             conf.env.append_value('LINKFLAGS', '-Wl,--fatal-warnings')
         # Enable exceptions for all C code
         conf.env.append_value('CFLAGS', ['-fexceptions'])
@@ -157,17 +157,17 @@ def configure_toolchain(conf):
             platform = conf.options.dest_platform
 
             if platform == 'Core-ppc32':
-                default_cross = '/opt/rtems-4.11/bin/powerpc-rtems4.11-'
+                default_cross = '/opt/rtems-4.11-rsb/bin/powerpc-rtems4.11-'
                 cpu = '403'
             if platform == 'Core-armv5':
-                default_cross = '/opt/rtems-4.11/bin/arm-rtemseabi4.11-'
+                default_cross = '/opt/rtems-4.11-rsb/bin/arm-rtems4.11-'
                 cpu = 'arm926ej-s'
                 # core2 is arm based - pass no-psabi flag to avoid excessive noise during compilation.
                 flags = ['-Wno-psabi', '-marm', '-mapcs', '-fno-omit-frame-pointer']
                 conf.env.append_value('CFLAGS', flags )
                 conf.env.append_value('CXXFLAGS', flags )
             if platform == 'Core-armv6':
-                default_cross = '/opt/rtems-4.11/bin/arm-rtemseabi4.11-'
+                default_cross = '/opt/rtems-4.11-rsb/bin/arm-rtems4.11-'
                 cpu = 'arm926ej-s'
                 # core2 is arm based - pass no-psabi flag to avoid excessive noise during compilation.
                 conf.env.append_value('CXXFLAGS', ['-Wno-psabi'])
