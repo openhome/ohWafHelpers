@@ -121,9 +121,9 @@ def configure_toolchain(conf):
                 '-fexceptions', '-Wall', '-Werror'])
 
         if conf.options.dest_platform == 'Linux-mipsel':
-            conf.env.append_value('LINKFLAGS', '--sysroot=/build/urara')
-            conf.env.append_value('CXXFLAGS', '--sysroot=/build/urara')
-            conf.env.append_value('CFLAGS', '--sysroot=/build/urara')
+            conf.env.append_value('LINKFLAGS', '-EL')
+            conf.env.append_value('CXXFLAGS', '-EL')
+            conf.env.append_value('CFLAGS', '-EL')
         if conf.options.dest_platform in ['Linux-x86']:
             conf.env.append_value('VALGRIND_ENABLE', ['1'])
             conf.env.append_value('CXXFLAGS', ['-m32'])
@@ -195,7 +195,7 @@ def configure_toolchain(conf):
         cross_toolchains = {
             'Linux-ARM'    : '/usr/local/arm-2010q1/bin/arm-none-linux-gnueabi-',
             'Linux-armhf'  : '/opt/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-',
-            'Linux-mipsel' : 'mipsel-cros-linux-gnu-',
+            'Linux-mipsel' : '/data/mips-2015.05-18/bin/mips-linux-gnu-',
             'Linux-ppc32'  : 'powerpc-linux-gnu-'
         }
         if conf.options.cross == None:
