@@ -251,6 +251,14 @@ def guess_libplatform_location(conf):
         ],
         message='Specify --libplatform')
     )
+    set_env_verbose(conf, 'TOOLS_PLATFORM', match_path(
+        conf,
+        [
+            '{options.libplatform}/install/{options.dest_platform}-{debugmode_tc}/libplatform/bin/',
+            'dependencies/{options.dest_platform}/libplatform/bin'
+        ],
+        message='Specify --libplatform')
+    )
 
 def guess_libds_location(conf):
     set_env_verbose(conf, 'INCLUDES_DS', match_path(
