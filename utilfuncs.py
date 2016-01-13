@@ -251,14 +251,6 @@ def guess_libplatform_location(conf):
         ],
         message='Specify --libplatform')
     )
-    set_env_verbose(conf, 'TOOLS_PLATFORM', match_path(
-        conf,
-        [
-            '{options.libplatform}/install/{options.dest_platform}-{debugmode_tc}/libplatform/bin/',
-            'dependencies/{options.dest_platform}/libplatform/bin'
-        ],
-        message='Specify --libplatform')
-    )
 
 def guess_libds_location(conf):
     set_env_verbose(conf, 'INCLUDES_DS', match_path(
@@ -380,6 +372,17 @@ def guess_openssl_location(conf):
         if conf.options.dest_platform.startswith('Linux-'):
             conf.env.LIB_OPENSSL = ['dl']
         conf.env.STLIB_OPENSSL = ['ssl', 'crypto']
+
+def get_ros_tool_path(ctx):
+    import os
+    from filetasks import find_resource_or_fail
+
+    host_platform = guess_dest_platform()
+    ros_path = os.path.join('dependencies', host_platform, 'libplatform', 'libplatform', 'bin', 'ros')
+    if host_platform in ['Windows-x86', 'Windows-x64']:
+        ros_path += '.exe'
+    ros_node = find_resource_or_fail(ctx, ctx.path, ros_path)
+    return ros_node.abspath()
 
 def get_platform_info(dest_platform):
     platforms = {
