@@ -251,6 +251,8 @@ def guess_libplatform_location(conf):
         ],
         message='Specify --libplatform')
     )
+    if conf.options.dest_platform.startswith('Linux-'):
+        conf.env.LIB_PLATFORM = ['rt']
 
 def guess_libds_location(conf):
     set_env_verbose(conf, 'INCLUDES_DS', match_path(
