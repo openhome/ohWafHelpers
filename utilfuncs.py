@@ -386,6 +386,44 @@ def get_ros_tool_path(ctx):
     ros_node = find_resource_or_fail(ctx, ctx.path, ros_path)
     return ros_node.abspath()
 
+def create_ros(bld, src_xml, dest):
+    ros_tool = get_ros_tool_path(bld)
+    ros_cmd = '{0} --input-xml {1} --output-file {2}'.format(ros_tool, src_xml, dest)
+    bld(
+        rule   = ros_cmd,
+        always = True)
+
+def create_ros_from_dir(bld, src_path, bld_path, key_prefix, ros_name):
+    bld_dir = bld.bldnode.abspath()
+    ros_src = ros_name + '.xml'
+    fh = open(os.path.join(bld_dir, ros_src), 'w')
+    fh.write('<ros>\n')
+    for directory, dirnames, filenames in os.walk(src_path):
+        for f in filenames:
+            line = '  <entry    type=\"file\"   key=\"{0}/{1}\">{2}/{1}</entry>\n'.format(key_prefix, f, bld_path)
+            fh.write(line)
+    fh.write('</ros>')
+    fh.close()
+    create_ros(bld, ros_src, ros_name + '.ros')
+
+def create_ros_from_dir_tree(bld, src_path, ros_name):
+    import string
+    ros_src = ros_name + '.xml'
+    fh = open(os.path.join(bld.bldnode.abspath(), ros_src), 'w')
+    fh.write('<ros>\n')
+    base_path = os.path.dirname(src_path)
+    for directory, dirnames, filenames in os.walk(src_path):
+        rel_path = os.path.relpath(directory, base_path)
+        key_path = rel_path.replace("\\", "/")
+        for f in filenames:
+            key = key_path + '/' + f
+            src_file = os.path.join(rel_path, f)
+            line = '  <entry    type=\"file\"   key=\"{0}\">{1}</entry>\n'.format(key, src_file)
+            fh.write(line)
+    fh.write('</ros>')
+    fh.close()
+    create_ros(bld, ros_src, ros_name + '.ros')
+
 def get_platform_info(dest_platform):
     platforms = {
         'Linux-x86': dict(endian='LITTLE',   build_platform='linux2', ohnet_plat_dir='Posix'),
