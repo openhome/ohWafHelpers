@@ -394,6 +394,7 @@ def create_ros(bld, src_xml, dest):
         always = True)
 
 def create_ros_from_dir(bld, src_path, bld_path, key_prefix, ros_name):
+    import os
     bld_dir = bld.bldnode.abspath()
     ros_src = ros_name + '.xml'
     fh = open(os.path.join(bld_dir, ros_src), 'w')
@@ -407,6 +408,7 @@ def create_ros_from_dir(bld, src_path, bld_path, key_prefix, ros_name):
     create_ros(bld, ros_src, ros_name + '.ros')
 
 def create_ros_from_dir_tree(bld, src_path, ros_name):
+    import os
     import string
     ros_src = ros_name + '.xml'
     fh = open(os.path.join(bld.bldnode.abspath(), ros_src), 'w')
