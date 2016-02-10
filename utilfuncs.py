@@ -391,6 +391,7 @@ def create_ros(bld, src_xml, dest):
     ros_cmd = '{0} --input-xml {1} --output-file {2}'.format(ros_tool, src_xml, dest)
     bld(
         rule   = ros_cmd,
+        target = dest,
         always = True)
 
 def create_ros_from_dir(bld, src_path, bld_path, key_prefix, ros_name):
