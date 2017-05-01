@@ -158,7 +158,7 @@ def configure_toolchain(conf):
 
             if platform == 'Core-ppc32':
                 default_cross = '/opt/rtems-4.11-rsb/bin/powerpc-rtems4.11-'
-                cpu = '403'
+                cpu = '405'
             if platform == 'Core-armv5':
                 default_cross = '/opt/rtems-4.11-rsb/bin/arm-rtems4.11-'
                 cpu = 'arm926ej-s'
