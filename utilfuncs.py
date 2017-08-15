@@ -120,6 +120,11 @@ def configure_toolchain(conf):
         conf.env.append_value('CXXFLAGS', [
                 '-fexceptions', '-Wall', '-Werror'])
 
+        if conf.options.dest_platform == 'Linux-armhf':
+            sysroot = os.path.abspath('./dependencies/Linux-armhf/staging/')
+            conf.env.append_value('CFLAGS', '--sysroot='+sysroot)
+            conf.env.append_value('CXXFLAGS', '--sysroot='+sysroot)
+            conf.env.append_value('LINKFLAGS', '--sysroot='+sysroot)
         if conf.options.dest_platform == 'Linux-mipsel':
             conf.env.append_value('LINKFLAGS', '-EL')
             conf.env.append_value('CXXFLAGS', '-EL')
@@ -194,7 +199,7 @@ def configure_toolchain(conf):
 
         cross_toolchains = {
             'Linux-ARM'    : '/usr/local/arm-2010q1/bin/arm-none-linux-gnueabi-',
-            'Linux-armhf'  : '/opt/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-',
+            'Linux-armhf'  : '/opt/gcc-linaro-5.3.1-2016.05-i686_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-',
             'Linux-mipsel' : '/opt/mips-2015.05-18/bin/mips-linux-gnu-',
             'Linux-ppc32'  : 'powerpc-linux-gnu-'
         }
