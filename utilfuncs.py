@@ -120,11 +120,13 @@ def configure_toolchain(conf):
         conf.env.append_value('CXXFLAGS', [
                 '-fexceptions', '-Wall', '-Werror'])
 
-        if conf.options.dest_platform == 'Linux-armhf':
-            sysroot = os.path.abspath('./dependencies/Linux-armhf/staging/')
+        
+        if hasattr(conf, 'use_staging_tree'):
+            sysroot = os.path.abspath('./dependencies/' + conf.options.dest_platform + '/staging/')
             conf.env.append_value('CFLAGS', '--sysroot='+sysroot)
             conf.env.append_value('CXXFLAGS', '--sysroot='+sysroot)
             conf.env.append_value('LINKFLAGS', '--sysroot='+sysroot)
+
         if conf.options.dest_platform == 'Linux-mipsel':
             conf.env.append_value('LINKFLAGS', '-EL')
             conf.env.append_value('CXXFLAGS', '-EL')
