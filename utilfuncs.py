@@ -120,7 +120,7 @@ def configure_toolchain(conf):
         conf.env.append_value('CXXFLAGS', [
                 '-fexceptions', '-Wall', '-Werror'])
 
-        
+
         if hasattr(conf, 'use_staging_tree'):
             sysroot = os.path.abspath('./dependencies/' + conf.options.dest_platform + '/staging/')
             conf.env.append_value('CFLAGS', '--sysroot='+sysroot)
@@ -295,7 +295,7 @@ def guess_ohnet_location(conf):
         [
             '{options.ohnet_lib_dir}',
             '{options.ohnet}/Build/Obj/{platform_info[ohnet_plat_dir]}/{options.debugmode}',
-            'dependencies/{options.dest_platform}/ohNet-{options.dest_platform}-{debugmode_lc}-dev/lib', 
+            'dependencies/{options.dest_platform}/ohNet-{options.dest_platform}-{debugmode_lc}-dev/lib',
             'dependencies/{options.dest_platform}/ohNet-{options.dest_platform}-{debugmode_tc}/lib',
         ],
         message='Specify --ohnet-lib-dir or --ohnet')
@@ -313,6 +313,14 @@ def guess_ohnet_location(conf):
         [
             '{options.ohnet}/OpenHome/Net/T4/Templates',
             'dependencies/{options.dest_platform}/ohNet-{options.dest_platform}-{debugmode_tc}/lib/t4',
+        ],
+        message='Specify --ohnet')
+    )
+    set_env_verbose(conf, 'SERVICE_GEN_DIR', match_path(
+        conf,
+        [
+            '{options.ohnet}/OpenHome/Net/ServiceGen',
+            'dependencies/{options.dest_platform}/ohNet-{options.dest_platform}-{debugmode_tc}/lib/ServiceGen',
         ],
         message='Specify --ohnet')
     )
