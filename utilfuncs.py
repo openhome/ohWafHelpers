@@ -394,7 +394,7 @@ def get_ros_tool_path(ctx):
     import os
     from filetasks import find_resource_or_fail
 
-    host_platform = ctx.env.dest_platform
+    host_platform = guess_dest_platform()
     ros_path = os.path.join('dependencies', host_platform, 'libplatform', 'libplatform', 'bin', 'ros')
     if host_platform in ['Windows-x86', 'Windows-x64']:
         ros_path += '.exe'
