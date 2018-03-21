@@ -369,7 +369,7 @@ def guess_openssl_location(conf):
         [
             '{options.openssl}/build/{options.dest_platform}/include',
             '{options.openssl}/include',
-            'dependencies/{options.dest_platform}/libressl/include',
+            'dependencies/{options.dest_platform}/openssl/include',
         ],
         message='Specify --openssl')
     )
@@ -378,7 +378,7 @@ def guess_openssl_location(conf):
         [
             '{options.openssl}/build/{options.dest_platform}/lib',
             '{options.openssl}/lib',
-            'dependencies/{options.dest_platform}/libressl/lib',
+            'dependencies/{options.dest_platform}/openssl/lib',
         ],
         message='Specify --openssl')
     )
