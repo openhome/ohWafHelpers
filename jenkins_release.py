@@ -45,7 +45,7 @@ if 'PUBLISH_VERSION' in os.environ:
     publishVersion  = os.environ['PUBLISH_VERSION']
 
 items = os.listdir('.')
-tarName = '%s-%s.tar' % (jobName, publishVersion)
+tarName = '%s-%s.tar.gz' % (jobName, publishVersion)
 print('Creating %s' % tarName)
 tar = tarfile.open(name=tarName, mode='w:gz')
 for item in items:
