@@ -45,9 +45,9 @@ if 'PUBLISH_VERSION' in os.environ:
     publishVersion  = os.environ['PUBLISH_VERSION']
 
 items = os.listdir('.')
-tarName = '%s-%s.tar.gz' % (jobName, publishVersion)
+tarName = '%s-%s.tar' % (jobName, publishVersion)
 print('Creating %s' % tarName)
-tar = tarfile.TarFile(name=tarName, mode='w')
+tar = tarfile.open(name=tarName, mode='w:gz')
 for item in items:
     if item not in excludes:
         print('    adding %s' % item)
@@ -57,6 +57,6 @@ tar.close()
 awsBucket = 'linn.artifacts.public'
 resource = boto3.resource('s3')
 print('Publish %s -> s3://%s/artifacts/%s/%s' % (tarName, awsBucket, jobName, tarName))
-bucket = resource.Bucket( awsBucket )
-with open(tarName, 'rb') as data:
-    bucket.upload_fileobj(data, 'artifacts/%s/%s' % (jobName, tarName))
+# bucket = resource.Bucket( awsBucket )
+# with open(tarName, 'rb') as data:
+#     bucket.upload_fileobj(data, 'artifacts/%s/%s' % (jobName, tarName))
