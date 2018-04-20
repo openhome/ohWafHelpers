@@ -57,6 +57,6 @@ tar.close()
 awsBucket = 'linn.artifacts.public'
 resource = boto3.resource('s3')
 print('Publish %s -> s3://%s/artifacts/%s/%s' % (tarName, awsBucket, jobName, tarName))
-# bucket = resource.Bucket( awsBucket )
-# with open(tarName, 'rb') as data:
-#     bucket.upload_fileobj(data, 'artifacts/%s/%s' % (jobName, tarName))
+bucket = resource.Bucket( awsBucket )
+with open(tarName, 'rb') as data:
+    bucket.upload_fileobj(data, 'artifacts/%s/%s' % (jobName, tarName))
