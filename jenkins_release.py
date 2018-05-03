@@ -54,7 +54,7 @@ for item in items:
         tar.add(item, arcname='ohWafHelpers/%s' % item)
 tar.close()
 
-awsBucket = 'linn.artifacts.public'
+awsBucket = 'linn-artifacts-public'
 resource = boto3.resource('s3')
 print('Publish %s -> s3://%s/artifacts/%s/%s' % (tarName, awsBucket, jobName, tarName))
 bucket = resource.Bucket( awsBucket )
