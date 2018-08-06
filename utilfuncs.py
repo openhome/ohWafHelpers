@@ -216,6 +216,7 @@ def configure_toolchain(conf):
         conf.env.AR         = cross_compile + 'ar'
         conf.env.LINK_CXX   = cross_compile + 'g++'
         conf.env.LINK_CC    = cross_compile + 'gcc'
+        conf.env.STRIP      = cross_compile + 'strip'
 
 # helper functions for guess_xxx_location
 
