@@ -145,8 +145,10 @@ def configure_toolchain(conf):
             if 'CC' in os.environ:
                 if os.environ['CC'].endswith('clang'):
                     conf.env.append_value('CXXFLAGS',['-fPIC'])
+                    conf.env.append_value('CFLAGS',['-fPIC'])
             else:
                 conf.env.append_value('CXXFLAGS',['-Wno-psabi', '-fPIC'])
+                conf.env.append_value('CFLAGS',['-fPIC'])
         elif conf.options.dest_platform in ['Mac-x86', 'Mac-x64']:
             if conf.options.dest_platform == 'Mac-x86':
                 conf.env.append_value('CXXFLAGS', ['-arch', 'i386', '-m32'])
@@ -157,6 +159,7 @@ def configure_toolchain(conf):
                 conf.env.append_value('CFLAGS', ['-arch', 'x86_64'])
                 conf.env.append_value('LINKFLAGS', ['-arch', 'x86_64'])
             conf.env.append_value('CXXFLAGS',['-fPIC', '-mmacosx-version-min=10.7', '-DPLATFORM_MACOSX_GNU'])
+            conf.env.append_value('CFLAGS',['-fPIC'])
             conf.env.append_value('LINKFLAGS',['-stdlib=libc++', '-framework', 'CoreFoundation', '-framework', 'SystemConfiguration'])
         # Options for Core-ppc32 and Core-armv5 / Core-armv6
         if conf.options.dest_platform in ['Core-ppc32', 'Core-armv5', 'Core-armv6']:
