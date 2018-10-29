@@ -75,7 +75,7 @@ def is_core_platform(conf):
     return conf.options.dest_platform in ['Core-ppc32', 'Core-armv5', 'Core-armv6']
 
 def configure_toolchain(conf):
-    import os, sys
+    import platform, os, sys
     platform_info = get_platform_info(conf.options.dest_platform)
     if platform_info['build_platform'] != sys.platform:
         conf.fatal('Can only build for {0} on {1}, but currently running on {2}.'.format(conf.options.dest_platform, platform_info['build_platform'], sys.platform))
@@ -202,9 +202,12 @@ def configure_toolchain(conf):
             conf.env.append_value('CFLAGS',     mcpu)
             conf.env.append_value('DEFINES',   ['BYTE_ORDER=' + platform_info['endian'] + '_ENDIAN'])
 
+        linux_armhf_compiler = '/opt/gcc-linaro-5.3.1-2016.05-i686_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-'
+        if (platform.architecture()[0] == '64bit'):
+            linux_armhf_compiler = '/opt/gcc-linaro-5.3.1-2016.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-'
         cross_toolchains = {
             'Linux-ARM'    : '/usr/local/arm-2010q1/bin/arm-none-linux-gnueabi-',
-            'Linux-armhf'  : '/opt/gcc-linaro-5.3.1-2016.05-i686_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-',
+            'Linux-armhf'  : linux_armhf_compiler,
             'Linux-rpi'    : '/opt/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-',
             'Linux-mipsel' : '/opt/mips-2015.05-18/bin/mips-linux-gnu-',
             'Linux-ppc32'  : 'powerpc-linux-gnu-'
