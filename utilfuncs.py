@@ -4,7 +4,7 @@ def invoke_test(tsk):
         o = frame.find(tag)
         if o != None:
             from xml.sax.saxutils import unescape
-            print '    ' + prefix + ': ' + unescape(o.text)
+            print('    ' + prefix + ': ' + unescape(o.text))
     # invoke_test
     import subprocess
     import os
@@ -37,10 +37,10 @@ def invoke_test(tsk):
         errors = doc.findall('//error')
         if len(errors) > 0:
             for error in errors:
-                print '---- error start ----'
+                print('---- error start ----')
                 frames = error.findall('.//frame')
                 for frame in frames:
-                    print '  ---- frame start ----'
+                    print('  ---- frame start ----')
                     for tag, prefix in [['ip', 'Object'],
                                         ['fn', 'Function'],
                                         ['dir', 'Directory'],
@@ -48,8 +48,8 @@ def invoke_test(tsk):
                                         ['line', 'Line'],
                                        ]:
                         print_vg_frame_component(frame, tag, prefix)
-                    print '  ---- frame end ----'
-                print '---- error end ----'
+                    print('  ---- frame end ----')
+                print('---- error end ----')
             raise Exception("Errors from valgrind")
 
 
