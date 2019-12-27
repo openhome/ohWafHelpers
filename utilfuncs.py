@@ -270,22 +270,22 @@ def guess_libplatform_location(conf):
     if conf.options.dest_platform.startswith('Linux-'):
         conf.env.LIB_PLATFORM = ['rt']
 
-def guess_libds_location(conf):
+def guess_ds_location(conf):
     set_env_verbose(conf, 'INCLUDES_DS', match_path(
         conf,
         [
-            '{options.libds}',
-            'dependencies/{options.dest_platform}/libds/include'
+            '{options.ds}',
+            'dependencies/{options.dest_platform}/ds/include'
         ],
-        message='Specify --libds')
+        message='Specify --ds')
     )
     set_env_verbose(conf, 'STLIBPATH_DS', match_path(
         conf,
         [
-            '{options.libds}/build',
-            'dependencies/{options.dest_platform}/libds/lib'
+            '{options.ds}/build',
+            'dependencies/{options.dest_platform}/ds/lib'
         ],
-        message='Specify --libds')
+        message='Specify --ds')
     )
 
 def guess_ohnet_location(conf):
