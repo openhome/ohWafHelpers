@@ -372,32 +372,30 @@ def guess_libosa_location(conf):
         message='Specify --libosa')
     )
 
-def guess_openssl_location(conf):
-    set_env_verbose(conf, 'INCLUDES_OPENSSL', match_path(
+def guess_ssl_location(conf):
+    set_env_verbose(conf, 'INCLUDES_SSL', match_path(
         conf,
         [
-            '{options.openssl}/build/{options.dest_platform}/include',
-            '{options.openssl}/include',
-            'dependencies/{options.dest_platform}/openssl/include',
+            '{options.ssl}/build/{options.dest_platform}/include',
+            '{options.ssl}/include',
+            'dependencies/{options.dest_platform}/libressl/include',
         ],
-        message='Specify --openssl')
+        message='Specify --ssl')
     )
-    set_env_verbose(conf, 'STLIBPATH_OPENSSL', match_path(
+    set_env_verbose(conf, 'STLIBPATH_SSL', match_path(
         conf,
         [
-            '{options.openssl}/build/{options.dest_platform}/lib',
-            '{options.openssl}/lib',
-            'dependencies/{options.dest_platform}/openssl/lib',
+            '{options.ssl}/build/{options.dest_platform}/lib',
+            '{options.ssl}/lib',
+            'dependencies/{options.dest_platform}/libressl/lib',
         ],
-        message='Specify --openssl')
+        message='Specify --ssl')
     )
+    conf.env.STLIB_SSL = ['ssl', 'crypto']
     if conf.options.dest_platform in ['Windows-x86', 'Windows-x64']:
-        conf.env.STLIB_OPENSSL = ['libeay32', 'ssleay32']
-        conf.env.LIB_OPENSSL = ['advapi32', 'gdi32', 'user32']
-    else:
-        if conf.options.dest_platform.startswith('Linux-'):
-            conf.env.LIB_OPENSSL = ['dl']
-        conf.env.STLIB_OPENSSL = ['ssl', 'crypto']
+        conf.env.LIB_SSL = ['advapi32']
+    elif conf.options.dest_platform.startswith('Linux-'):
+        conf.env.LIB_SSL = ['dl']
 
 def get_ros_tool_path(ctx):
     import os
