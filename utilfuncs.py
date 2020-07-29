@@ -65,10 +65,8 @@ def guess_dest_platform():
     if platform.system() == 'Linux' and platform.architecture()[0] == '64bit':
         return 'Linux-x64'
     if platform.system() == 'Darwin':
-        # Mac behaves similarly to Windows - a 64-bit machine can support
-        # both 32-bit and 64-bit processes. We prefer 32-bit because it's
-        # generally more compatible and in particular Mono is 32-bit-only.
-        return 'Mac-x86'
+        # 32bit Mac support no longer supported on Apple platforms
+        return 'Mac-x64'
     return None
 
 def is_core_platform(conf):
@@ -109,7 +107,7 @@ def configure_toolchain(conf):
         conf.env.append_value('CFLAGS', conf.env['CXXFLAGS'])
         # C++11 support is only relevant to C++ code.
         # ...but does seem to have some effect on the level of C supported by C++ files.
-        if conf.options.dest_platform in ['Mac-x86', 'Mac-x64']:
+        if conf.options.dest_platform in ['Mac-x64']:
             conf.env.append_value('CFLAGS', ['-std=gnu89'])
             conf.env.append_value('CXXFLAGS', ['-std=c++11', '-D_POSIX_C_SOURCE=199309', '-stdlib=libc++'])
         else:
@@ -150,15 +148,10 @@ def configure_toolchain(conf):
             else:
                 conf.env.append_value('CXXFLAGS',['-Wno-psabi', '-fPIC'])
                 conf.env.append_value('CFLAGS',['-fPIC'])
-        elif conf.options.dest_platform in ['Mac-x86', 'Mac-x64']:
-            if conf.options.dest_platform == 'Mac-x86':
-                conf.env.append_value('CXXFLAGS', ['-arch', 'i386', '-m32'])
-                conf.env.append_value('CFLAGS', ['-arch', 'i386', '-m32'])
-                conf.env.append_value('LINKFLAGS', ['-arch', 'i386', '-m32'])
-            if conf.options.dest_platform == 'Mac-x64':
-                conf.env.append_value('CXXFLAGS', ['-arch', 'x86_64'])
-                conf.env.append_value('CFLAGS', ['-arch', 'x86_64'])
-                conf.env.append_value('LINKFLAGS', ['-arch', 'x86_64'])
+        elif conf.options.dest_platform in ['Mac-x64']:
+            conf.env.append_value('CXXFLAGS', ['-arch', 'x86_64'])
+            conf.env.append_value('CFLAGS', ['-arch', 'x86_64'])
+            conf.env.append_value('LINKFLAGS', ['-arch', 'x86_64'])
             conf.env.append_value('CXXFLAGS',['-fPIC', '-mmacosx-version-min=10.7', '-DPLATFORM_MACOSX_GNU'])
             conf.env.append_value('CFLAGS',['-fPIC'])
             conf.env.append_value('LINKFLAGS',['-stdlib=libc++', '-framework', 'CoreFoundation', '-framework', 'SystemConfiguration', '-framework', 'IOKit'])
@@ -463,7 +456,6 @@ def get_platform_info(dest_platform):
         'Core-ppc32': dict(endian='BIG',     build_platform='linux2', ohnet_plat_dir='Core-ppc32'),
         'Core-armv5': dict(endian='LITTLE',  build_platform='linux2', ohnet_plat_dir='Core-armv5'),
         'Core-armv6': dict(endian='LITTLE',  build_platform='linux2', ohnet_plat_dir='Core-armv6'),
-        'Mac-x86': dict(endian='LITTLE',     build_platform='darwin', ohnet_plat_dir='Mac-x86'),
         'Mac-x64': dict(endian='LITTLE',     build_platform='darwin', ohnet_plat_dir='Mac-x64'),
         'iOs-ARM': dict(endian='LITTLE',     build_platform='darwin', ohnet_plat_dir='Mac/arm'),
     }
