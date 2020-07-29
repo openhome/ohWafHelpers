@@ -161,7 +161,7 @@ def configure_toolchain(conf):
                 conf.env.append_value('LINKFLAGS', ['-arch', 'x86_64'])
             conf.env.append_value('CXXFLAGS',['-fPIC', '-mmacosx-version-min=10.7', '-DPLATFORM_MACOSX_GNU'])
             conf.env.append_value('CFLAGS',['-fPIC'])
-            conf.env.append_value('LINKFLAGS',['-stdlib=libc++', '-framework', 'CoreFoundation', '-framework', 'SystemConfiguration'])
+            conf.env.append_value('LINKFLAGS',['-stdlib=libc++', '-framework', 'CoreFoundation', '-framework', 'SystemConfiguration', '-framework', 'IOKit'])
         # Options for Core-ppc32 and Core-armv5 / Core-armv6
         if conf.options.dest_platform in ['Core-ppc32', 'Core-armv5', 'Core-armv6']:
 
