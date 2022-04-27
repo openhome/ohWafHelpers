@@ -391,27 +391,29 @@ def guess_ssl_location(conf):
         conf.env.LIB_SSL = ['dl']
 
 def guess_raat_location(conf):
-    set_env_verbose(conf, 'INCLUDES_RAAT', match_path(
-        conf,
-        [
-            '{options.raat}/build/{options.dest_platform}/include',
-            '{options.raat}/include',
-            'dependencies/{options.dest_platform}/raat/include',
-        ],
-        message='Specify --raat')
-    )
-    set_env_verbose(conf, 'STLIBPATH_RAAT', match_path(
-        conf,
-        [
-            '{options.raat}/build/{options.dest_platform}/lib',
-            '{options.raat}/lib',
-            'dependencies/{options.dest_platform}/raat/lib',
-        ],
-        message='Specify --raat')
-    )
-    conf.env.STLIB_RAAT = ['jansson', 'lua', 'luv', 'plugins', 'raat', 'rcore', 'uv']
-    if conf.options.dest_platform.startswith('Windows'):
-        conf.env.DEFINES_RAAT = ['PLATFORM_WINDOWS']
+    if conf.options.dest_platform in ['Windows-x86', 'Linux-x64']:
+        set_env_verbose(conf, 'INCLUDES_RAAT', match_path(
+            conf,
+            [
+                '{options.raat}/build/{options.dest_platform}/include',
+                '{options.raat}/include',
+                'dependencies/{options.dest_platform}/raat/include',
+            ],
+            message='Specify --raat')
+        )
+        set_env_verbose(conf, 'STLIBPATH_RAAT', match_path(
+            conf,
+            [
+                '{options.raat}/build/{options.dest_platform}/lib',
+                '{options.raat}/lib',
+                'dependencies/{options.dest_platform}/raat/lib',
+            ],
+            message='Specify --raat')
+        )
+        conf.env.STLIB_RAAT = ['jansson', 'lua', 'luv', 'plugins', 'raat', 'rcore', 'uv']
+        conf.env.append_value('DEFINES', 'RAAT_ENABLE')
+        if conf.options.dest_platform.startswith('Windows'):
+            conf.env.DEFINES_RAAT = ['PLATFORM_WINDOWS']
 
 def get_ros_tool_path(ctx):
     import os
