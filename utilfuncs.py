@@ -410,7 +410,7 @@ def guess_raat_location(conf):
             ],
             message='Specify --raat')
         )
-        conf.env.STLIB_RAAT = ['jansson', 'lua', 'luv', 'plugins', 'raat', 'rcore', 'uv']
+        conf.env.STLIB_RAAT = ['raat', 'rcore', 'lua', 'luv', 'uv', 'jansson']
         conf.env.append_value('DEFINES', 'RAAT_ENABLE')
         if conf.options.dest_platform.startswith('Windows'):
             conf.env.DEFINES_RAAT = ['PLATFORM_WINDOWS']
