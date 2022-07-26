@@ -391,7 +391,7 @@ def guess_ssl_location(conf):
         conf.env.LIB_SSL = ['dl']
 
 def guess_raat_location(conf):
-    if conf.options.dest_platform in ['Windows-x86', 'Linux-x64']:
+    if conf.options.dest_platform in ['Windows-x86']:
         set_env_verbose(conf, 'INCLUDES_RAAT', match_path(
             conf,
             [
