@@ -76,7 +76,20 @@ def configure_toolchain(conf):
     import os, sys
     import platform as platform_arch
     platform_info = get_platform_info(conf.options.dest_platform)
-    if platform_info['build_platform'] != sys.platform:
+
+    '''
+    Work around oddity that Python2 reports "linuxX", where X is the kernel major version, e.g., "linux2", while Python3 just reports "linux", for Linux platforms.
+    As a result, full platform string matching is incompatible between Python2 and Python3.
+    Ensure backwards compatibility with Python2 by just checking start of string matches.
+    See:
+        https://docs.python.org/2/library/sys.html
+        https://docs.python.org/3/library/sys.html
+
+    False-positives could creep in if following case holds true and the host and build platforms are incompatible:
+        len(sys.platform) > len(platform_info['build_platform']) and sys.platform.startswith(platform_info['build_platform'])
+    In that case, will have to modify this to perform platform-specific targeting.
+    '''
+    if not sys.platform.startswith(platform_info['build_platform']):
         conf.fatal('Can only build for {0} on {1}, but currently running on {2}.'.format(conf.options.dest_platform, platform_info['build_platform'], sys.platform))
     conf.env.MSVC_TARGETS = ['x86']
     if conf.options.dest_platform in ['Windows-x86', 'Windows-x64']:
@@ -469,18 +482,18 @@ def create_ros_from_dir_tree(bld, src_path, ros_name):
 
 def get_platform_info(dest_platform):
     platforms = {
-        'Linux-x86': dict(endian='LITTLE',   build_platform='linux2', ohnet_plat_dir='Posix'),
-        'Linux-x64': dict(endian='LITTLE',   build_platform='linux2', ohnet_plat_dir='Posix'),
-        'Linux-ARM': dict(endian='LITTLE',   build_platform='linux2', ohnet_plat_dir='Posix'),
-        'Linux-armhf': dict(endian='LITTLE', build_platform='linux2', ohnet_plat_dir='Posix'),
-        'Linux-rpi': dict(endian='LITTLE',   build_platform='linux2', ohnet_plat_dir='Posix'),
-        'Linux-mipsel': dict(endian='LITTLE',build_platform='linux2', ohnet_plat_dir='Posix'),
-        'Linux-ppc32': dict(endian='BIG',    build_platform='linux2', ohnet_plat_dir='Posix'),
+        'Linux-x86': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
+        'Linux-x64': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
+        'Linux-ARM': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
+        'Linux-armhf': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
+        'Linux-rpi': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
+        'Linux-mipsel': dict(endian='LITTLE',build_platform='linux', ohnet_plat_dir='Posix'),
+        'Linux-ppc32': dict(endian='BIG',    build_platform='linux', ohnet_plat_dir='Posix'),
         'Windows-x86': dict(endian='LITTLE', build_platform='win32',  ohnet_plat_dir='Windows'),
         'Windows-x64': dict(endian='LITTLE', build_platform='win32',  ohnet_plat_dir='Windows'),
-        'Core-ppc32': dict(endian='BIG',     build_platform='linux2', ohnet_plat_dir='Core-ppc32'),
-        'Core-armv5': dict(endian='LITTLE',  build_platform='linux2', ohnet_plat_dir='Core-armv5'),
-        'Core-armv6': dict(endian='LITTLE',  build_platform='linux2', ohnet_plat_dir='Core-armv6'),
+        'Core-ppc32': dict(endian='BIG',     build_platform='linux', ohnet_plat_dir='Core-ppc32'),
+        'Core-armv5': dict(endian='LITTLE',  build_platform='linux', ohnet_plat_dir='Core-armv5'),
+        'Core-armv6': dict(endian='LITTLE',  build_platform='linux', ohnet_plat_dir='Core-armv6'),
         'Mac-x64': dict(endian='LITTLE',     build_platform='darwin', ohnet_plat_dir='Mac-x64'),
         'iOs-ARM': dict(endian='LITTLE',     build_platform='darwin', ohnet_plat_dir='Mac/arm'),
     }
