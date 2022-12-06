@@ -93,7 +93,7 @@ def configure_toolchain(conf):
         conf.fatal('Can only build for {0} on {1}, but currently running on {2}.'.format(conf.options.dest_platform, platform_info['build_platform'], sys.platform))
     conf.env.MSVC_TARGETS = ['x86']
     if conf.options.dest_platform in ['Windows-x86', 'Windows-x64']:
-        conf.load('msvc')
+        conf.load('msvc', funs='no_autodetect')
         conf.env.append_value('CXXFLAGS',['/EHa', '/DDEFINE_TRACE', '/DDEFINE_'+platform_info['endian']+'_ENDIAN', '/D_CRT_SECURE_NO_WARNINGS'])
         if conf.options.debugmode == 'Debug':
             conf.env.append_value('CXXFLAGS',['/MTd', '/Z7', '/Od', '/RTC1', '/DDEFINE_DEBUG'])
