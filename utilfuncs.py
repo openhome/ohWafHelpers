@@ -211,7 +211,16 @@ def configure_toolchain(conf):
 
         linux_armhf_compiler = '/opt/gcc-linaro-7.3.1-2018.05-i686_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-'
         if (platform_arch.architecture()[0] == '64bit'):
+            #jiwenq
             linux_armhf_compiler = '/opt/gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-'
+            linux_armhf_compiler = '/opt/linn-fb/5.15-kirkstone/sysroots/x86_64-pokysdk-linux/usr/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-'
+            sysroot = os.path.abspath('./dependencies/' + conf.options.dest_platform + '/staging/')
+            sysroot =  os.path.abspath('/opt/linn-fb/5.15-kirkstone/sysroots/cortexa9t2hf-neon-poky-linux-gnueabi/')
+            conf.env.append_value('CXXFLAGS', ['-mfloat-abi=hard', '-mcpu=cortex-a9', '-I'+sysroot+'/usr/include/++dfb/', '-I'+sysroot+'/usr/include/directfb/', '-I'+sysroot+'/usr/include/dbus-1.0/', '-I'+sysroot+'/usr/lib/dbus-1.0/include'])
+            conf.env.append_value('CFLAGS', '--sysroot='+sysroot)
+            conf.env.append_value('CXXFLAGS', '--sysroot='+sysroot)
+            conf.env.append_value('LINKFLAGS', ['-mfloat-abi=hard', '-mcpu=cortex-a9', '-Wl,-no-pie'])
+            conf.env.append_value('LINKFLAGS', '--sysroot='+sysroot)
         cross_toolchains = {
             'Linux-ARM'    : '/usr/local/arm-2010q1/bin/arm-none-linux-gnueabi-',
             'Linux-armhf'  : linux_armhf_compiler,
