@@ -211,7 +211,6 @@ def configure_toolchain(conf):
 
         linux_armhf_compiler = '/opt/gcc-linaro-7.3.1-2018.05-i686_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-'
         if (platform_arch.architecture()[0] == '64bit'):
-            #jiwenq
             linux_armhf_compiler = '/opt/gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-'
             linux_armhf_compiler = '/opt/linn-fb/5.15-kirkstone/sysroots/x86_64-pokysdk-linux/usr/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-'
             sysroot = os.path.abspath('./dependencies/' + conf.options.dest_platform + '/staging/')
