@@ -131,14 +131,6 @@ def configure_toolchain(conf):
         # Don't enable warnings for C code as its typically third party and written to different standards
         conf.env.append_value('CXXFLAGS', [
                 '-fexceptions', '-Wall', '-Werror'])
-
-
-        if hasattr(conf, 'use_staging_tree'):
-            sysroot = os.path.abspath('./dependencies/' + conf.options.dest_platform + '/staging/')
-            conf.env.append_value('CFLAGS', '--sysroot='+sysroot)
-            conf.env.append_value('CXXFLAGS', '--sysroot='+sysroot)
-            conf.env.append_value('LINKFLAGS', '--sysroot='+sysroot)
-
         if conf.options.dest_platform == 'Linux-mipsel':
             conf.env.append_value('LINKFLAGS', '-EL')
             conf.env.append_value('CXXFLAGS', '-EL')
@@ -212,14 +204,6 @@ def configure_toolchain(conf):
         linux_armhf_compiler = '/opt/gcc-linaro-7.3.1-2018.05-i686_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-'
         if (platform_arch.architecture()[0] == '64bit'):
             linux_armhf_compiler = '/opt/gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-'
-            linux_armhf_compiler = '/opt/linn-fb/5.15-kirkstone/sysroots/x86_64-pokysdk-linux/usr/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-'
-            sysroot = os.path.abspath('./dependencies/' + conf.options.dest_platform + '/staging/')
-            sysroot =  os.path.abspath('/opt/linn-fb/5.15-kirkstone/sysroots/cortexa9t2hf-neon-poky-linux-gnueabi/')
-            conf.env.append_value('CXXFLAGS', ['-mfloat-abi=hard', '-mcpu=cortex-a9', '-I'+sysroot+'/usr/include/++dfb/', '-I'+sysroot+'/usr/include/directfb/', '-I'+sysroot+'/usr/include/dbus-1.0/', '-I'+sysroot+'/usr/lib/dbus-1.0/include'])
-            conf.env.append_value('CFLAGS', '--sysroot='+sysroot)
-            conf.env.append_value('CXXFLAGS', '--sysroot='+sysroot)
-            conf.env.append_value('LINKFLAGS', ['-mfloat-abi=hard', '-mcpu=cortex-a9', '-Wl,-no-pie'])
-            conf.env.append_value('LINKFLAGS', '--sysroot='+sysroot)
         cross_toolchains = {
             'Linux-ARM'    : '/usr/local/arm-2010q1/bin/arm-none-linux-gnueabi-',
             'Linux-armhf'  : linux_armhf_compiler,
@@ -230,16 +214,30 @@ def configure_toolchain(conf):
         if conf.options.cross == None:
             conf.options.cross = cross_toolchains.get(conf.options.dest_platform, None)
 
-    if conf.options.cross or os.environ.get('CROSS_COMPILE', None):
-        cross_compile = conf.options.cross or os.environ['CROSS_COMPILE']
-        conf.msg('Cross compiling using compiler prefix:', cross_compile)
-        conf.env.CC         = cross_compile + 'gcc'
-        conf.env.CXX        = cross_compile + 'g++'
-        conf.env.AR         = cross_compile + 'ar'
-        conf.env.LINK_CXX   = cross_compile + 'g++'
-        conf.env.LINK_CC    = cross_compile + 'gcc'
-        conf.env.STRIP      = cross_compile + 'strip'
-
+    for var in (("CC", "gcc", "CFLAGS"), ("CXX", "g++", "CXXFLAGS"), ("AR", "ar", None), ("LINK_CXX", "g++", "LINKFLAGS"), ("LINK_CC", "gcc", "LINKFLAGS"), ("STRIP", "strip", None)):
+    	cross_env_var, default_bin, flag_var = var 
+    	val = os.environ.get(cross_env_var, None)    	
+    	if not val:
+            cross_compile = os.environ.get('CROSS_COMPILE', None)
+            if not cross_compile:                
+                conf.env.append_value('DEFINES', 'WAF_BUILD_LEGACY')
+                cross_compile = conf.options.cross                 
+            val = cross_compile + default_bin
+    	if len(val.split(" ")) > 1 and flag_var is not None:
+    	    conf.env.append_value(flag_var, val.split(" ")[1:])
+    	setattr(conf.env, cross_env_var, val.split(" ")[0])
+           
+    conf.env.sysroot = os.environ.get("SDKTARGETSYSROOT", None)
+    
+    if hasattr(conf, 'use_staging_tree') and not conf.env.sysroot:
+        conf.env.sysroot = os.path.abspath('./dependencies/' + conf.options.dest_platform + '/staging/')
+    if not any([flag.startswith('--sysroot') for flag in conf.env.CFLAGS]):
+        conf.env.append_value('CFLAGS', '--sysroot='+conf.env.sysroot)
+    if not any([flag.startswith('--sysroot') for flag in conf.env.CXXFLAGS]):
+        conf.env.append_value('CXXFLAGS', '--sysroot='+conf.env.sysroot)
+    if not any([flag.startswith('--sysroot') for flag in conf.env.LINKFLAGS]):
+        conf.env.append_value('LINKFLAGS', '--sysroot='+conf.env.sysroot)
+    conf.env.append_value("CXXFLAGS", "-Wno-deprecated-declarations")
 # helper functions for guess_xxx_location
 
 def set_env_verbose(conf, varname, value):
@@ -387,32 +385,41 @@ def guess_libosa_location(conf):
     )
 
 def guess_ssl_location(conf):
-    set_env_verbose(conf, 'INCLUDES_SSL', match_path(
-        conf,
-        [
-            '{options.ssl}/build/{options.dest_platform}/include',
-            '{options.ssl}/include',
-            'dependencies/{options.dest_platform}/libressl/include',
-        ],
-        message='Specify --ssl')
-    )
-    set_env_verbose(conf, 'STLIBPATH_SSL', match_path(
-        conf,
-        [
-            '{options.ssl}/build/{options.dest_platform}/lib',
-            '{options.ssl}/lib',
-            'dependencies/{options.dest_platform}/libressl/lib',
-        ],
-        message='Specify --ssl')
-    )
+    import os
+    sysroot = os.environ.get("SDKTARGETSYSROOT", None)
+    if not (sysroot and os.path.exists(sysroot + "/usr/lib/libssl.so")): 
+        set_env_verbose(conf, 'INCLUDES_SSL', match_path(
+            conf,
+            [
+                '{options.ssl}/build/{options.dest_platform}/include',
+                '{options.ssl}/include',
+                'dependencies/{options.dest_platform}/libressl/include',
+                'dependencies/{options.dest_platform}/staging/usr/include',
+            ],
+            message='Specify --ssl')
+        )
+        set_env_verbose(conf, 'STLIBPATH_SSL', match_path(
+            conf,
+            [
+                '{options.ssl}/build/{options.dest_platform}/lib',
+                '{options.ssl}/lib',
+                '{options.ssl}/ssl',
+                'dependencies/{options.dest_platform}/libressl/lib',
+                'dependencies/{options.dest_platform}/staging/usr/lib',            
+            ],
+            message='Specify --ssl')
+        )
     conf.env.STLIB_SSL = ['ssl', 'crypto']
+    #conf.env.append_value('LINKFLAGS', '-lssl') 
+    #conf.env.append_value('LINKFLAGS', '-lcrypto')
+    
     if conf.options.dest_platform in ['Windows-x86', 'Windows-x64']:
         conf.env.LIB_SSL = ['advapi32']
     elif conf.options.dest_platform.startswith('Linux-'):
         conf.env.LIB_SSL = ['dl']
 
 def guess_raat_location(conf):
-    if conf.options.dest_platform in ['Windows-x86', 'Linux-armhf']:
+    if conf.options.dest_platform in ['Windows-x86']: #, 'Linux-armhf']:
         set_env_verbose(conf, 'INCLUDES_RAAT', match_path(
             conf,
             [
@@ -431,7 +438,7 @@ def guess_raat_location(conf):
             ],
             message='Specify --raat')
         )
-        conf.env.STLIB_RAAT = ['raat', 'rcore', 'lua', 'luv', 'uv', 'jansson']
+        conf.env.STLIB_RAAT = ['m', 'raat', 'rcore', 'lua', 'luv', 'uv', 'jansson']
         conf.env.append_value('DEFINES', 'RAAT_ENABLE')
         if conf.options.dest_platform.startswith('Windows'):
             conf.env.DEFINES_RAAT = ['PLATFORM_WINDOWS']
@@ -494,6 +501,7 @@ def get_platform_info(dest_platform):
         'Linux-x64': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-ARM': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-armhf': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
+        'Linux-riscv64': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-rpi': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-mipsel': dict(endian='LITTLE',build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-ppc32': dict(endian='BIG',    build_platform='linux', ohnet_plat_dir='Posix'),
