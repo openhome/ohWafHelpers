@@ -146,13 +146,11 @@ def configure_toolchain(conf):
             conf.env.append_value('LINKFLAGS', ['-m64'])
         if conf.options.dest_platform.startswith('Linux-'):
             conf.env.append_value('LINKFLAGS', ['-pthread'])
-            if 'CC' in os.environ:
-                if os.environ['CC'].endswith('clang'):
-                    conf.env.append_value('CXXFLAGS',['-fPIC'])
-                    conf.env.append_value('CFLAGS',['-fPIC'])
+            if 'CC' in os.environ and os.environ['CC'].endswith('clang'):
+                conf.env.append_value('CXXFLAGS',['-fPIC'])               
             else:
                 conf.env.append_value('CXXFLAGS',['-Wno-psabi', '-fPIC'])
-                conf.env.append_value('CFLAGS',['-fPIC'])
+            conf.env.append_value('CFLAGS',['-fPIC'])
         elif conf.options.dest_platform in ['Mac-x64']:
             conf.env.append_value('CXXFLAGS', ['-arch', 'x86_64'])
             conf.env.append_value('CFLAGS', ['-arch', 'x86_64'])
@@ -220,8 +218,9 @@ def configure_toolchain(conf):
     	if not val:
             cross_compile = os.environ.get('CROSS_COMPILE', None)
             if not cross_compile:                
-                conf.env.append_value('DEFINES', 'WAF_BUILD_LEGACY')
-                cross_compile = conf.options.cross                 
+                cross_compile = conf.options.cross       
+            if cross_compile is None:  
+                cross_compile = ""        
             val = cross_compile + default_bin
     	if len(val.split(" ")) > 1 and flag_var is not None:
     	    conf.env.append_value(flag_var, val.split(" ")[1:])
@@ -231,12 +230,13 @@ def configure_toolchain(conf):
     
     if hasattr(conf, 'use_staging_tree') and not conf.env.sysroot:
         conf.env.sysroot = os.path.abspath('./dependencies/' + conf.options.dest_platform + '/staging/')
-    if not any([flag.startswith('--sysroot') for flag in conf.env.CFLAGS]):
-        conf.env.append_value('CFLAGS', '--sysroot='+conf.env.sysroot)
-    if not any([flag.startswith('--sysroot') for flag in conf.env.CXXFLAGS]):
-        conf.env.append_value('CXXFLAGS', '--sysroot='+conf.env.sysroot)
-    if not any([flag.startswith('--sysroot') for flag in conf.env.LINKFLAGS]):
-        conf.env.append_value('LINKFLAGS', '--sysroot='+conf.env.sysroot)
+    if conf.env.sysroot:
+        if not any([flag.startswith('--sysroot') for flag in conf.env.CFLAGS]):
+            conf.env.append_value('CFLAGS', '--sysroot='+conf.env.sysroot)
+        if not any([flag.startswith('--sysroot') for flag in conf.env.CXXFLAGS]):
+            conf.env.append_value('CXXFLAGS', '--sysroot='+conf.env.sysroot)
+        if not any([flag.startswith('--sysroot') for flag in conf.env.LINKFLAGS]):
+            conf.env.append_value('LINKFLAGS', '--sysroot='+conf.env.sysroot)
     conf.env.append_value("CXXFLAGS", "-Wno-deprecated-declarations")
 # helper functions for guess_xxx_location
 
@@ -410,8 +410,6 @@ def guess_ssl_location(conf):
             message='Specify --ssl')
         )
     conf.env.STLIB_SSL = ['ssl', 'crypto']
-    #conf.env.append_value('LINKFLAGS', '-lssl') 
-    #conf.env.append_value('LINKFLAGS', '-lcrypto')
     
     if conf.options.dest_platform in ['Windows-x86', 'Windows-x64']:
         conf.env.LIB_SSL = ['advapi32']
@@ -501,6 +499,7 @@ def get_platform_info(dest_platform):
         'Linux-x64': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-ARM': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-armhf': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
+        'Linux-aarch64': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-riscv64': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-rpi': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-mipsel': dict(endian='LITTLE',build_platform='linux', ohnet_plat_dir='Posix'),
