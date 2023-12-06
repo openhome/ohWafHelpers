@@ -417,7 +417,7 @@ def guess_ssl_location(conf):
         conf.env.LIB_SSL = ['dl']
 
 def guess_raat_location(conf):
-    if conf.options.dest_platform in ['Windows-x86']: #, 'Linux-armhf']:
+    if conf.options.dest_platform in ['Windows-x86', 'Linux-armhf']:
         set_env_verbose(conf, 'INCLUDES_RAAT', match_path(
             conf,
             [
@@ -436,7 +436,7 @@ def guess_raat_location(conf):
             ],
             message='Specify --raat')
         )
-        conf.env.STLIB_RAAT = ['m', 'raat', 'rcore', 'lua', 'luv', 'uv', 'jansson']
+        conf.env.STLIB_RAAT = ['m', 'raat', 'rcore', 'lua', 'luv', 'uv', 'jansson', 'monocypher']
         conf.env.append_value('DEFINES', 'RAAT_ENABLE')
         if conf.options.dest_platform.startswith('Windows'):
             conf.env.DEFINES_RAAT = ['PLATFORM_WINDOWS']
