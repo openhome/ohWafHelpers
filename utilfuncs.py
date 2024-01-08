@@ -205,6 +205,7 @@ def configure_toolchain(conf):
         cross_toolchains = {
             'Linux-ARM'    : '/usr/local/arm-2010q1/bin/arm-none-linux-gnueabi-',
             'Linux-armhf'  : linux_armhf_compiler,
+            'Linux-aarch64'  : '/opt/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-',
             'Linux-rpi'    : '/opt/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-',
             'Linux-mipsel' : '/opt/mips-2015.05-18/bin/mips-linux-gnu-',
             'Linux-ppc32'  : 'powerpc-linux-gnu-'
