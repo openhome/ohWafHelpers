@@ -436,7 +436,11 @@ def guess_raat_location(conf):
             ],
             message='Specify --raat')
         )
+<<<<<<< HEAD
         conf.env.STLIB_RAAT = ['m', 'raat', 'rcore', 'lua', 'luv', 'uv', 'jansson', 'monocypher']
+=======
+        conf.env.STLIB_RAAT = ['raat', 'rcore', 'lua', 'luv', 'uv', 'jansson', 'monocypher']
+>>>>>>> 779f68f92c528274a576ccc873807f3ab7a0409a
         conf.env.append_value('DEFINES', 'RAAT_ENABLE')
         if conf.options.dest_platform.startswith('Windows'):
             conf.env.DEFINES_RAAT = ['PLATFORM_WINDOWS']
