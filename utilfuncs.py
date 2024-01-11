@@ -410,6 +410,8 @@ def guess_ssl_location(conf):
             ],
             message='Specify --ssl')
         )
+    else:
+        print("Setting INCLUDES_SSL         : Yocto SDK detected - using sysroot SSL library")
     conf.env.STLIB_SSL = ['ssl', 'crypto']
     
     if conf.options.dest_platform in ['Windows-x86', 'Windows-x64']:
