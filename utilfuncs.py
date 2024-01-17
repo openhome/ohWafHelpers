@@ -410,8 +410,6 @@ def guess_ssl_location(conf):
             ],
             message='Specify --ssl')
         )
-    else:
-        print("Setting INCLUDES_SSL         : Yocto SDK detected - using sysroot SSL library")
     conf.env.STLIB_SSL = ['ssl', 'crypto']
     
     if conf.options.dest_platform in ['Windows-x86', 'Windows-x64']:
@@ -516,3 +514,16 @@ def get_platform_info(dest_platform):
         'iOs-ARM': dict(endian='LITTLE',     build_platform='darwin', ohnet_plat_dir='Mac/arm'),
     }
     return platforms[dest_platform]
+
+def source_yocto_sdk(conf):
+    import os
+    import subprocess
+
+    sdk_env_path = os.path.join(os.getcwd(), 'dependencies', conf.options.dest_platform, 'yocto_core4_sdk', 'environment-setup-cortexa9t2hf-neon-poky-linux-gnueabi')
+    if not os.path.exists(sdk_env_path):
+        raise FileNotFoundError('SDK doesn\'t seem to exist; did you go fetch?')
+    env_string = subprocess.check_output('. ' + sdk_env_path + ' && env', shell=True)
+    for el in env_string.decode('utf-8').split('\n'):
+        if '=' in el:
+            conf.env['YOCTO_SDK_' + el.split('=')[0]] = el.split('=', 1)[1]
+            os.environ[el.split('=')[0]] = el.split('=', 1)[1]
