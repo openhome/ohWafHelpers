@@ -388,28 +388,30 @@ def guess_libosa_location(conf):
 def guess_ssl_location(conf):
     import os
     sysroot = os.environ.get("SDKTARGETSYSROOT", None)
-    if not (sysroot and os.path.exists(sysroot + "/usr/lib/libssl.so")): 
-        set_env_verbose(conf, 'INCLUDES_SSL', match_path(
-            conf,
-            [
-                '{options.ssl}/build/{options.dest_platform}/include',
-                '{options.ssl}/include',
-                'dependencies/{options.dest_platform}/libressl/include',
-                'dependencies/{options.dest_platform}/staging/usr/include',
-            ],
-            message='Specify --ssl')
-        )
-        set_env_verbose(conf, 'STLIBPATH_SSL', match_path(
-            conf,
-            [
-                '{options.ssl}/build/{options.dest_platform}/lib',
-                '{options.ssl}/lib',
-                '{options.ssl}/ssl',
-                'dependencies/{options.dest_platform}/libressl/lib',
-                'dependencies/{options.dest_platform}/staging/usr/lib',            
-            ],
-            message='Specify --ssl')
-        )
+
+    set_env_verbose(conf, 'INCLUDES_SSL', match_path(
+        conf,
+        [
+            '{options.ssl}/build/{options.dest_platform}/include',
+            '{options.ssl}/include',
+            'dependencies/{options.dest_platform}/libressl/include',
+            'dependencies/{options.dest_platform}/staging/usr/include',
+            f'{sysroot}/usr/include',
+        ],
+        message='Specify --ssl')
+    )
+    set_env_verbose(conf, 'STLIBPATH_SSL', match_path(
+        conf,
+        [
+            '{options.ssl}/build/{options.dest_platform}/lib',
+            '{options.ssl}/lib',
+            '{options.ssl}/ssl',
+            'dependencies/{options.dest_platform}/libressl/lib',
+            'dependencies/{options.dest_platform}/staging/usr/lib', 
+            f'{sysroot}/usr/lib',           
+        ],
+        message='Specify --ssl')
+    )
     conf.env.STLIB_SSL = ['ssl', 'crypto']
     
     if conf.options.dest_platform in ['Windows-x86', 'Windows-x64']:
