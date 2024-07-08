@@ -214,18 +214,20 @@ def configure_toolchain(conf):
             conf.options.cross = cross_toolchains.get(conf.options.dest_platform, None)
 
     for var in (("CC", "gcc", "CFLAGS"), ("CXX", "g++", "CXXFLAGS"), ("AR", "ar", None), ("LINK_CXX", "g++", "LINKFLAGS"), ("LINK_CC", "gcc", "LINKFLAGS"), ("STRIP", "strip", None)):
-    	cross_env_var, default_bin, flag_var = var 
-    	val = os.environ.get(cross_env_var, None)    	
-    	if not val:
+        cross_env_var, default_bin, flag_var = var 
+        val = os.environ.get(cross_env_var, None)    	
+        if not val:
             cross_compile = os.environ.get('CROSS_COMPILE', None)
-            if not cross_compile:                
+            if not cross_compile:
+                if conf.options.dest_platform in ['Linux-armhf']:
+                    print("WARNING: building using legacy toolchain")                
                 cross_compile = conf.options.cross       
             if cross_compile is None:  
                 cross_compile = ""        
             val = cross_compile + default_bin
-    	if len(val.split(" ")) > 1 and flag_var is not None:
-    	    conf.env.append_value(flag_var, val.split(" ")[1:])
-    	setattr(conf.env, cross_env_var, val.split(" ")[0])
+        if len(val.split(" ")) > 1 and flag_var is not None:
+           conf.env.append_value(flag_var, val.split(" ")[1:])
+        setattr(conf.env, cross_env_var, val.split(" ")[0])
            
     conf.env.sysroot = os.environ.get("SDKTARGETSYSROOT", None)
     
@@ -389,27 +391,31 @@ def guess_ssl_location(conf):
     import os
     sysroot = os.environ.get("SDKTARGETSYSROOT", None)
 
-    set_env_verbose(conf, 'INCLUDES_SSL', match_path(
-        conf,
-        [
-            os.path.join('{options.ssl}', 'build', '{options.dest_platform}', 'include'),
-            os.path.join('{options.ssl}', 'include'),
-            os.path.join('dependencies', '{options.dest_platform}' 'libressl', 'include'),
-            os.path.join('dependencies', '{options.dest_platform}', 'staging', 'usr', 'include'), 
-            os.path.join(sysroot, 'usr', 'include'),
-        ],
-        message='Specify --ssl')
-    )
-    set_env_verbose(conf, 'STLIBPATH_SSL', match_path(
-        conf,
-        [
+    lib_paths = [
             os.path.join('{options.ssl}', 'build', '{options.dest_platform}', 'lib'),
             os.path.join('{options.ssl}', 'lib'),
             os.path.join('{options.ssl}', 'ssl'),
             os.path.join('dependencies', '{options.dest_platform}' 'libressl', 'lib'),
             os.path.join('dependencies', '{options.dest_platform}', 'staging', 'usr', 'lib'), 
-            os.path.join(sysroot, 'usr', 'lib'),           
-        ],
+    ]
+    include_paths = [
+            os.path.join('{options.ssl}', 'build', '{options.dest_platform}', 'include'),
+            os.path.join('{options.ssl}', 'include'),
+            os.path.join('dependencies', '{options.dest_platform}' 'libressl', 'include'),
+            os.path.join('dependencies', '{options.dest_platform}', 'staging', 'usr', 'include'), 
+]
+    if sysroot is not None:
+        lib_paths.append(os.path.join(sysroot, 'usr', 'lib'))
+        include_paths.append(os.path.join(sysroot, 'usr', 'include'))
+    
+    set_env_verbose(conf, 'INCLUDES_SSL', match_path(
+        conf,
+        include_paths,
+        message='Specify --ssl')
+    )
+    set_env_verbose(conf, 'STLIBPATH_SSL', match_path(
+        conf,
+        lib_paths,
         message='Specify --ssl')
     )
     conf.env.STLIB_SSL = ['ssl', 'crypto']
