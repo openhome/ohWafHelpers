@@ -227,7 +227,7 @@ def configure_toolchain(conf):
                     cross_compile = ""        
                 val = cross_compile + default_bin
             if len(val.split(" ")) > 1 and flag_var is not None:
-            conf.env.append_value(flag_var, val.split(" ")[1:])
+                conf.env.append_value(flag_var, val.split(" ")[1:])
             setattr(conf.env, cross_env_var, val.split(" ")[0])
            
     conf.env.sysroot = os.environ.get("SDKTARGETSYSROOT", None)
