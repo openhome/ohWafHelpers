@@ -395,15 +395,15 @@ def guess_ssl_location(conf):
             os.path.join('{options.ssl}', 'build', '{options.dest_platform}', 'lib'),
             os.path.join('{options.ssl}', 'lib'),
             os.path.join('{options.ssl}', 'ssl'),
-            os.path.join('dependencies', '{options.dest_platform}' 'libressl', 'lib'),
+            os.path.join('dependencies', '{options.dest_platform}', 'libressl', 'lib'),
             os.path.join('dependencies', '{options.dest_platform}', 'staging', 'usr', 'lib'), 
     ]
     include_paths = [
             os.path.join('{options.ssl}', 'build', '{options.dest_platform}', 'include'),
             os.path.join('{options.ssl}', 'include'),
-            os.path.join('dependencies', '{options.dest_platform}' 'libressl', 'include'),
+            os.path.join('dependencies', '{options.dest_platform}', 'libressl', 'include'),
             os.path.join('dependencies', '{options.dest_platform}', 'staging', 'usr', 'include'), 
-]
+    ]
     if sysroot is not None:
         lib_paths.append(os.path.join(sysroot, 'usr', 'lib'))
         include_paths.append(os.path.join(sysroot, 'usr', 'include'))
