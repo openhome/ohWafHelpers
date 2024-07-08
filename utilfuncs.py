@@ -213,21 +213,22 @@ def configure_toolchain(conf):
         if conf.options.cross == None:
             conf.options.cross = cross_toolchains.get(conf.options.dest_platform, None)
 
-    for var in (("CC", "gcc", "CFLAGS"), ("CXX", "g++", "CXXFLAGS"), ("AR", "ar", None), ("LINK_CXX", "g++", "LINKFLAGS"), ("LINK_CC", "gcc", "LINKFLAGS"), ("STRIP", "strip", None)):
-        cross_env_var, default_bin, flag_var = var 
-        val = os.environ.get(cross_env_var, None)    	
-        if not val:
-            cross_compile = os.environ.get('CROSS_COMPILE', None)
-            if not cross_compile:
-                if conf.options.dest_platform in ['Linux-armhf']:
-                    print("WARNING: building using legacy toolchain")                
-                cross_compile = conf.options.cross       
-            if cross_compile is None:  
-                cross_compile = ""        
-            val = cross_compile + default_bin
-        if len(val.split(" ")) > 1 and flag_var is not None:
-           conf.env.append_value(flag_var, val.split(" ")[1:])
-        setattr(conf.env, cross_env_var, val.split(" ")[0])
+    if "Linux" in conf.options.dest_platform:
+        for var in (("CC", "gcc", "CFLAGS"), ("CXX", "g++", "CXXFLAGS"), ("AR", "ar", None), ("LINK_CXX", "g++", "LINKFLAGS"), ("LINK_CC", "gcc", "LINKFLAGS"), ("STRIP", "strip", None)):
+            cross_env_var, default_bin, flag_var = var 
+            val = os.environ.get(cross_env_var, None)    	
+            if not val:
+                cross_compile = os.environ.get('CROSS_COMPILE', None)
+                if not cross_compile:
+                    if conf.options.dest_platform in ['Linux-armhf']:
+                        print("WARNING: building using legacy toolchain")                
+                    cross_compile = conf.options.cross       
+                if cross_compile is None:  
+                    cross_compile = ""        
+                val = cross_compile + default_bin
+            if len(val.split(" ")) > 1 and flag_var is not None:
+            conf.env.append_value(flag_var, val.split(" ")[1:])
+            setattr(conf.env, cross_env_var, val.split(" ")[0])
            
     conf.env.sysroot = os.environ.get("SDKTARGETSYSROOT", None)
     
