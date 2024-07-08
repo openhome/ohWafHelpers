@@ -213,7 +213,7 @@ def configure_toolchain(conf):
         if conf.options.cross == None:
             conf.options.cross = cross_toolchains.get(conf.options.dest_platform, None)
 
-    if "Linux" in conf.options.dest_platform:
+    if "Linux" in conf.options.dest_platform or "Core" in conf.options.dest_platform:
         for var in (("CC", "gcc", "CFLAGS"), ("CXX", "g++", "CXXFLAGS"), ("AR", "ar", None), ("LINK_CXX", "g++", "LINKFLAGS"), ("LINK_CC", "gcc", "LINKFLAGS"), ("STRIP", "strip", None)):
             cross_env_var, default_bin, flag_var = var 
             val = os.environ.get(cross_env_var, None)    	
