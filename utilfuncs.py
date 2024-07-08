@@ -229,6 +229,7 @@ def configure_toolchain(conf):
             if len(val.split(" ")) > 1 and flag_var is not None:
                 conf.env.append_value(flag_var, val.split(" ")[1:])
             setattr(conf.env, cross_env_var, val.split(" ")[0])
+        conf.env.append_value("CXXFLAGS", "-Wno-deprecated-declarations")
            
     conf.env.sysroot = os.environ.get("SDKTARGETSYSROOT", None)
     
@@ -240,8 +241,8 @@ def configure_toolchain(conf):
         if not any([flag.startswith('--sysroot') for flag in conf.env.CXXFLAGS]):
             conf.env.append_value('CXXFLAGS', '--sysroot='+conf.env.sysroot)
         if not any([flag.startswith('--sysroot') for flag in conf.env.LINKFLAGS]):
-            conf.env.append_value('LINKFLAGS', '--sysroot='+conf.env.sysroot)
-    conf.env.append_value("CXXFLAGS", "-Wno-deprecated-declarations")
+            conf.env.append_value('LINKFLAGS', '--sysroot='+conf.env.sysroot)   
+    
 # helper functions for guess_xxx_location
 
 def set_env_verbose(conf, varname, value):
