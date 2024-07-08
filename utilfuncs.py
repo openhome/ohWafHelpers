@@ -391,25 +391,25 @@ def guess_ssl_location(conf):
 
     set_env_verbose(conf, 'INCLUDES_SSL', match_path(
         conf,
-        [
+        os.path.join(
             '{options.ssl}/build/{options.dest_platform}/include',
             '{options.ssl}/include',
             'dependencies/{options.dest_platform}/libressl/include',
             'dependencies/{options.dest_platform}/staging/usr/include',
             f'{sysroot}/usr/include',
-        ],
+        ),
         message='Specify --ssl')
     )
     set_env_verbose(conf, 'STLIBPATH_SSL', match_path(
         conf,
-        [
+        os.path.join(
             '{options.ssl}/build/{options.dest_platform}/lib',
             '{options.ssl}/lib',
             '{options.ssl}/ssl',
             'dependencies/{options.dest_platform}/libressl/lib',
             'dependencies/{options.dest_platform}/staging/usr/lib', 
             f'{sysroot}/usr/lib',           
-        ],
+        ),
         message='Specify --ssl')
     )
     conf.env.STLIB_SSL = ['ssl', 'crypto']
