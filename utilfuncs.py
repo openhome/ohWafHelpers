@@ -534,7 +534,10 @@ def source_yocto_sdk(conf):
     sdk_env_path = os.path.join(os.getcwd(), 'dependencies', conf.options.dest_platform, 'yocto_core4_sdk', 'environment-setup-cortexa9t2hf-neon-poky-linux-gnueabi')
     if not os.path.exists(sdk_env_path):
         raise FileNotFoundError('SDK doesn\'t seem to exist; did you go fetch?')
-    env_string = subprocess.check_output('. ' + sdk_env_path + ' && env', shell=True)
+    env = os.environ.copy()
+    env["PATH"] = ":".join([p for p in env["PATH"].split(":") if not p.startswith("/mnt/c")])
+
+    env_string = subprocess.check_output('. ' + sdk_env_path + ' && env', shell=True, env=env)
     for el in env_string.decode('utf-8').split('\n'):
         if '=' in el:
             conf.env['YOCTO_SDK_' + el.split('=')[0]] = el.split('=', 1)[1]
