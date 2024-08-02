@@ -284,6 +284,14 @@ def guess_libplatform_location(conf):
         ],
         message='Specify --libplatform')
     )
+    set_env_verbose(conf, 'TOOLS_PLATFORM', match_path(
+        conf,
+        [
+            '{options.libplatform}/install/{options.dest_platform}-{debugmode_tc}/libplatform/bin/',
+            'dependencies/{options.dest_platform}/libplatform/bin'
+        ],
+        message='Specify --libplatform')
+    )
     if conf.options.dest_platform.startswith('Linux-'):
         conf.env.LIB_PLATFORM = ['rt']
 
@@ -458,12 +466,14 @@ def get_ros_tool_path(ctx):
     import os
     from filetasks import find_resource_or_fail
 
+    ros_path = os.path.join(ctx.env.TOOLS_PLATFORM, 'ros');
     host_platform = guess_dest_platform()
-    ros_path = os.path.join('dependencies', host_platform, 'libplatform', 'libplatform', 'bin', 'ros')
     if host_platform in ['Windows-x86', 'Windows-x64']:
         ros_path += '.exe'
-    ros_node = find_resource_or_fail(ctx, ctx.path, ros_path)
-    return ros_node.abspath()
+    elif host_platform in ['Mac-x64', 'Mac-arm64']:
+        ros_path += '.elf'
+
+    return ros_path
 
 def create_ros(bld, src_xml, dest):
     ros_tool = get_ros_tool_path(bld)
