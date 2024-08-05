@@ -156,7 +156,7 @@ def configure_toolchain(conf):
             conf.env.append_value('CFLAGS',['-fPIC'])
         elif conf.options.dest_platform in ['Mac-x64']:
             conf.env.append_value('CXXFLAGS', ['-arch', 'x86_64'])
-            conf.env.append_value('CFLAGS', ['-arch', 'x86_64'])
+            conf.env.append_value('CFLAGS', ['-arch', 'x86_64', '-mmacosx-version-min=10.7', '-DPLATFORM_MACOSX_GNU'])
             conf.env.append_value('LINKFLAGS', ['-arch', 'x86_64'])
             conf.env.append_value('CXXFLAGS',['-fPIC', '-mmacosx-version-min=10.7', '-DPLATFORM_MACOSX_GNU'])
             conf.env.append_value('CFLAGS',['-fPIC'])
