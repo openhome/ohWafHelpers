@@ -52,6 +52,10 @@ def invoke_test(tsk):
                 print('---- error end ----')
             raise Exception("Errors from valgrind")
 
+def guess_host_platform():
+    # NOTE: We just cheat here and use the same logic as the guess_dest_platform as it gives us
+    #       exactly the value we require
+    return guess_dest_platform();
 
 def guess_dest_platform():
     # literally copied (for consistency) from default_platform.py in ohdevtools
@@ -65,7 +69,6 @@ def guess_dest_platform():
     if platform.system() == 'Linux' and platform.architecture()[0] == '64bit':
         return 'Linux-x64'
     if platform.system() == 'Darwin':
-        # 32bit Mac support no longer supported on Apple platforms
         return 'Mac-x64'
     return None
 
@@ -259,6 +262,7 @@ def match_path(conf, paths, message):
     import os.path
     for p in paths:
         fname = p.format(
+            env=conf.env,
             options=conf.options,
             debugmode_lc=conf.options.debugmode.lower(),
             debugmode_tc=conf.options.debugmode.title(),
@@ -268,6 +272,10 @@ def match_path(conf, paths, message):
     conf.fatal(message)
 
 def guess_libplatform_location(conf):
+    if 'LINN_HOST_PLATFORM' not in conf.env:
+        conf.fatal("'LINN_HOST_PLATFORM' not set. Use 'guess_host_location' to set this env value before calling this function.")
+        return
+    
     set_env_verbose(conf, 'INCLUDES_PLATFORM', match_path(
         conf,
         [
@@ -287,8 +295,8 @@ def guess_libplatform_location(conf):
     set_env_verbose(conf, 'TOOLS_PLATFORM', match_path(
         conf,
         [
-            '{options.libplatform}/install/{options.dest_platform}-{debugmode_tc}/libplatform/bin/',
-            'dependencies/{options.dest_platform}/libplatform/bin'
+            '{options.libplatform}/install/{env.LINN_HOST_PLATFORM}-{debugmode_tc}/libplatform/bin/',
+            'dependencies/{env.LINN_HOST_PLATFORM}/libplatform-host/libplatform/bin'
         ],
         message='Specify --libplatform')
     )
@@ -467,10 +475,9 @@ def get_ros_tool_path(ctx):
     from filetasks import find_resource_or_fail
 
     ros_path = os.path.join(ctx.env.TOOLS_PLATFORM, 'ros');
-    host_platform = guess_dest_platform()
-    if host_platform in ['Windows-x86', 'Windows-x64']:
+    if ctx.env.LINN_HOST_PLATFORM in ['Windows-x86', 'Windows-x64']:
         ros_path += '.exe'
-    elif host_platform in ['Mac-x64', 'Mac-arm64']:
+    elif ctx.env.LINN_HOST_PLATFORM in ['Mac-x64', 'Mac-arm64']:
         ros_path += '.elf'
 
     return ros_path
