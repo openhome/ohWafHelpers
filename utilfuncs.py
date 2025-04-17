@@ -206,25 +206,23 @@ def configure_toolchain(conf):
         if (platform_arch.architecture()[0] == '64bit'):
             linux_armhf_compiler = '/opt/gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-'
         cross_toolchains = {
-            'Linux-ARM'    : '/usr/local/arm-2010q1/bin/arm-none-linux-gnueabi-',
             'Linux-armhf'  : linux_armhf_compiler,
-            'Linux-aarch64'  : '/opt/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-',
+            'armhf-buildroot-linux' : linux_armhf_compiler,
             'Linux-rpi'    : '/opt/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-',
+            'armhf-raspbian-linux'    : '/opt/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-',
             'Linux-mipsel' : '/opt/mips-2015.05-18/bin/mips-linux-gnu-',
             'Linux-ppc32'  : 'powerpc-linux-gnu-'
         }
         if conf.options.cross == None:
             conf.options.cross = cross_toolchains.get(conf.options.dest_platform, None)
 
-    if "Linux" in conf.options.dest_platform or "Core" in conf.options.dest_platform:
+    if "linux" in conf.options.dest_platform.lower() or "Core" in conf.options.dest_platform:
         for var in (("CC", "gcc", "CFLAGS"), ("CXX", "g++", "CXXFLAGS"), ("AR", "ar", None), ("LINK_CXX", "g++", "LINKFLAGS"), ("LINK_CC", "gcc", "LINKFLAGS"), ("STRIP", "strip", None)):
             cross_env_var, default_bin, flag_var = var 
             val = os.environ.get(cross_env_var, None)    	
             if not val:
                 cross_compile = os.environ.get('CROSS_COMPILE', None)
-                if not cross_compile:
-                    if conf.options.dest_platform in ['Linux-armhf']:
-                        print("WARNING: building using legacy toolchain")                
+                if not cross_compile:               
                     cross_compile = conf.options.cross       
                 if cross_compile is None:  
                     cross_compile = ""        
@@ -444,7 +442,7 @@ def guess_ssl_location(conf):
         conf.env.LIB_SSL = ['dl']
 
 def guess_raat_location(conf):
-    if conf.options.dest_platform in ['Windows-x86', 'Linux-armhf']:
+    if conf.options.dest_platform in ['Windows-x86', 'Linux-armhf', 'armhf-buildroot-linux', 'armhf-kirkstone-linux', 'aarch64-kirkstone-linux']:
         set_env_verbose(conf, 'INCLUDES_RAAT', match_path(
             conf,
             [
@@ -527,11 +525,13 @@ def get_platform_info(dest_platform):
     platforms = {
         'Linux-x86': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-x64': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
-        'Linux-ARM': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-armhf': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
-        'Linux-aarch64': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
-        'Linux-riscv64': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
+        'armhf-buildroot-linux': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
+        'armhf-kirkstone-linux': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
+        'aarch64-kirkstone-linux': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
+        'riscv64-buildroot-linux': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-rpi': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
+        'armhf-raspbian-linux':  dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-mipsel': dict(endian='LITTLE',build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-ppc32': dict(endian='BIG',    build_platform='linux', ohnet_plat_dir='Posix'),
         'Windows-x86': dict(endian='LITTLE', build_platform='win32',  ohnet_plat_dir='Windows'),
@@ -548,9 +548,9 @@ def source_yocto_sdk(conf):
     import os
     import subprocess
     sdk_env_path = None
-    if conf.options.dest_platform == "Linux-armhf":
+    if conf.options.dest_platform in ['armhf-kirkstone-linux']:
         sdk_env_path = os.path.join(os.getcwd(), 'dependencies', conf.options.dest_platform, 'yocto_core4_sdk', 'environment-setup-cortexa9t2hf-neon-poky-linux-gnueabi')
-    elif conf.options.dest_platform == "Linux-aarch64":
+    elif conf.options.dest_platform in ['aarch64-kirkstone-linux']:
         sdk_env_path = os.path.join(os.getcwd(), 'dependencies', conf.options.dest_platform, 'yocto_core5_sdk', 'environment-setup-armv8a-poky-linux')
     if sdk_env_path is None:
         raise KeyError(f'{conf.options.dest_platform} is not a Yocto-based platform')
