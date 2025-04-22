@@ -553,7 +553,7 @@ def source_yocto_sdk(conf):
     elif conf.options.dest_platform in ['aarch64-kirkstone-linux']:
         sdk_env_path = os.path.join(os.getcwd(), 'dependencies', conf.options.dest_platform, 'yocto_core5_sdk', 'environment-setup-armv8a-poky-linux')
     if sdk_env_path is None:
-        raise KeyError(f'{conf.options.dest_platform} is not a Yocto-based platform')
+        raise KeyError('%s is not a Yocto-based platform' % conf.options.dest_platform)
     elif not os.path.exists(sdk_env_path):
         raise FileNotFoundError('SDK doesn\'t seem to exist; did you go fetch?')
     env = os.environ.copy()
