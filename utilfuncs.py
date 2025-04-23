@@ -147,7 +147,7 @@ def configure_toolchain(conf):
             conf.env.append_value('CXXFLAGS', ['-m64'])
             conf.env.append_value('CFLAGS', ['-m64'])
             conf.env.append_value('LINKFLAGS', ['-m64'])
-        if conf.options.dest_platform.startswith('Linux-'):
+        if conf.options.dest_platform.startswith('Linux-') or conf.options.dest_platform.endswith('-linux'):
             conf.env.append_value('LINKFLAGS', ['-pthread'])
             if 'CC' in os.environ and os.environ['CC'].endswith('clang'):
                 conf.env.append_value('CXXFLAGS',['-fPIC'])               
@@ -439,7 +439,7 @@ def guess_ssl_location(conf):
     if conf.options.dest_platform in ['Windows-x86', 'Windows-x64']:
         conf.env.LIB_SSL = ['advapi32']
     elif conf.options.dest_platform.startswith('Linux-') or conf.options.dest_platform.endswith('-linux'):
-        conf.env.LIB_SSL = ['dl', 'pthread']
+        conf.env.LIB_SSL = ['dl']
 
 def guess_raat_location(conf):
     if conf.options.dest_platform in ['Windows-x86', 'Linux-armhf', 'armhf-buildroot-linux', 'armhf-kirkstone-linux', 'aarch64-kirkstone-linux']:
