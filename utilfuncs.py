@@ -442,7 +442,7 @@ def guess_ssl_location(conf):
         conf.env.LIB_SSL = ['dl']
 
 def guess_raat_location(conf):
-    if conf.options.dest_platform in ['Windows-x86', 'Linux-armhf', 'armhf-buildroot-linux', 'armhf-kirkstone-linux', 'aarch64-kirkstone-linux']:
+    if conf.options.dest_platform in ['Windows-x86', 'Linux-armhf', 'armhf-buildroot-linux', 'armhf-kirkstone-linux', 'aarch64-kirkstone-linux', 'aarch64-scarthgap-linux',]:
         set_env_verbose(conf, 'INCLUDES_RAAT', match_path(
             conf,
             [
@@ -529,6 +529,7 @@ def get_platform_info(dest_platform):
         'armhf-buildroot-linux': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
         'armhf-kirkstone-linux': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
         'aarch64-kirkstone-linux': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
+        'aarch64-scarthgap-linux': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
         'riscv64-buildroot-linux': dict(endian='LITTLE', build_platform='linux', ohnet_plat_dir='Posix'),
         'Linux-rpi': dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
         'armhf-raspbian-linux':  dict(endian='LITTLE',   build_platform='linux', ohnet_plat_dir='Posix'),
@@ -550,7 +551,7 @@ def source_yocto_sdk(conf):
     sdk_env_path = None
     if conf.options.dest_platform in ['armhf-kirkstone-linux']:
         sdk_env_path = os.path.join(os.getcwd(), 'dependencies', conf.options.dest_platform, 'yocto_core4_sdk', 'environment-setup-cortexa9t2hf-neon-poky-linux-gnueabi')
-    elif conf.options.dest_platform in ['aarch64-kirkstone-linux']:
+    elif conf.options.dest_platform in ['aarch64-kirkstone-linux', 'aarch64-scarthgap-linux']:
         sdk_env_path = os.path.join(os.getcwd(), 'dependencies', conf.options.dest_platform, 'yocto_core5_sdk', 'environment-setup-armv8a-poky-linux')
     if sdk_env_path is None:
         raise KeyError('%s is not a Yocto-based platform' % conf.options.dest_platform)
