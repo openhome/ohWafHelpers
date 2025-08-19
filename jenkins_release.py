@@ -27,7 +27,7 @@ else:
                 os.mkdir(os.path.join(home, '.aws'))
             except:
                 pass
-            credsFile = urlopen('http://core.linn.co.uk/~artifacts/artifacts/aws-credentials' )
+            credsFile = urlopen('http://trac.linn.co.uk/software/raw-attachment/wiki/WikiStart/credentials' )
             creds = credsFile.read()
             with open(awsCreds, 'wt') as f:
                 f.write(creds)
