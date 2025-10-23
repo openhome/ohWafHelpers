@@ -444,7 +444,7 @@ def guess_ssl_location(conf):
     conf.env.STLIB_SSL = ['ssl', 'crypto']
     
     if conf.options.dest_platform in ['Windows-x86', 'Windows-x64']:
-        conf.env.LIB_SSL = ['advapi32']
+        conf.env.LIB_SSL = ['advapi32', 'bcrypt']
     elif conf.options.dest_platform.startswith('Linux-') or conf.options.dest_platform.endswith('-linux'):
         conf.env.LIB_SSL = ['dl']
 
