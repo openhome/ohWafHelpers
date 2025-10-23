@@ -472,6 +472,7 @@ def guess_raat_location(conf):
         conf.env.append_value('DEFINES', 'RAAT_ENABLE')
         if conf.options.dest_platform.startswith('Windows'):
             conf.env.DEFINES_RAAT = ['PLATFORM_WINDOWS']
+            conf.env.STLIB_RAAT.append('posix_win32')
         else:
             conf.env.STLIB_RAAT = ['m'] + conf.env.STLIB_RAAT
 
