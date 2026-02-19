@@ -573,3 +573,31 @@ def source_yocto_sdk(conf):
         if '=' in el:
             conf.env['YOCTO_SDK_' + el.split('=')[0]] = el.split('=', 1)[1]
             os.environ[el.split('=')[0]] = el.split('=', 1)[1]
+
+
+class SigningError(Exception):
+    pass
+
+
+def try_sign_build_artifacts(artifacts):
+    import os
+    if 'PGP_SIGNING_KEY' in os.environ and 'PGP_KEY_PASSPHRASE' in os.environ:
+        import gnupg
+        import shutil
+        import tempfile
+        # tmp_sig_dir = os.path.join(os.path.abspath(os.getcwd()), 'buildsign')
+        tmp_sig_dir = tempfile.mkdtemp() 
+        print("attempt to set sig dir to %s" % tmp_sig_dir)
+        gpg = gnupg.GPG(gnupghome=tmp_sig_dir)
+        gpg.import_keys_file(os.environ.get('PGP_SIGNING_KEY'))
+        if len(gpg.list_keys(True)) != 1:
+            print("ERROR: need 1 Private key to sign; got %d" % len(gpg.list_keys(True)))
+            shutil.rmtree(tmp_sig_dir)
+            sys.exit(1)
+        for obj_path in artifacts:
+            with open(obj_path, 'rb') as f:
+                gpg.sign_file(f, detach=True, passphrase=os.environ.get('PGP_KEY_PASSPHRASE'), output=f'{obj_path}.sig')            
+        shutil.rmtree(tmp_sig_dir)
+    else:
+        # this should be called from inside try/catch
+        raise SigningError("Sign requested but no keys in env to sign with, skipping signature generation")
