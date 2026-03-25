@@ -165,7 +165,14 @@ def configure_toolchain(conf):
             conf.env.append_value('CXXFLAGS', ['-arch', macosx_arch])
             conf.env.append_value('CFLAGS', ['-arch', macosx_arch, '-mmacosx-version-min=10.7', '-DPLATFORM_MACOSX_GNU'])
             conf.env.append_value('LINKFLAGS', ['-arch', macosx_arch])
-            conf.env.append_value('CXXFLAGS',['-fPIC', '-mmacosx-version-min=10.7', '-DPLATFORM_MACOSX_GNU'])
+            conf.env.append_value('CXXFLAGS',['-fPIC', '-mmacosx-version-min=10.7', '-DPLATFORM_MACOSX_GNU',
+                                              '-Wno-unused-private-field',
+                                              '-Wno-unused-const-variable',
+                                              '-Wno-inconsistent-missing-override',
+                                              '-Wno-unused-function',
+                                              '-Wno-delete-non-abstract-non-virtual-dtor',
+                                              '-Wno-tautological-undefined-compare',
+                                              '-Wno-unused-but-set-variable'])
             conf.env.append_value('CFLAGS',['-fPIC'])
             conf.env.append_value('LINKFLAGS',['-stdlib=libc++', '-framework', 'CoreFoundation', '-framework', 'SystemConfiguration', '-framework', 'IOKit'])
         # Options for Core-ppc32 and Core-armv5 / Core-armv6
