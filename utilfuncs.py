@@ -61,7 +61,10 @@ def guess_dest_platform():
     # literally copied (for consistency) from default_platform.py in ohdevtools
     import platform
     if platform.system() == 'Windows':
-        return 'Windows-x86'
+        if platform.architecture()[0] == '64bit':
+            return 'Windows-x64'
+        else:
+            return 'Windows-x86'
     if platform.system() == 'Linux' and platform.architecture()[0] == '32bit' and platform.machine()[0:3] == 'ppc':
         return 'Linux-ppc32'
     if platform.system() == 'Linux' and platform.architecture()[0] == '32bit':
@@ -99,6 +102,8 @@ def configure_toolchain(conf):
         conf.fatal('Can only build for {0} on {1}, but currently running on {2}.'.format(conf.options.dest_platform, platform_info['build_platform'], sys.platform))
     conf.env.MSVC_TARGETS = ['x86']
     if conf.options.dest_platform in ['Windows-x86', 'Windows-x64']:
+        if (conf.options.dest_platform == 'Windows-x64'):
+            conf.env.MSVC_TARGETS = ['x64']
         conf.load('msvc', funs='no_autodetect')
         conf.env.append_value('CXXFLAGS',['/EHa', '/DDEFINE_TRACE', '/DDEFINE_'+platform_info['endian']+'_ENDIAN', '/D_CRT_SECURE_NO_WARNINGS'])
         if conf.options.debugmode == 'Debug':
@@ -108,7 +113,7 @@ def configure_toolchain(conf):
             conf.env.append_value('CXXFLAGS',['/MT', '/Ox'])
         conf.env.append_value('CFLAGS', conf.env['CXXFLAGS'])
         # Only enable warnings for C++ code as C code is typically third party and often generates many warnings
-        conf.env.append_value('CXXFLAGS',['/W4', '/WX'])
+        conf.env.append_value('CXXFLAGS',['/W4', '/WX', '/wd4267', '/wd4244'])
         conf.env.append_value('LINKFLAGS', ['/SUBSYSTEM:CONSOLE'])
     else:
         conf.load('compiler_cxx')
