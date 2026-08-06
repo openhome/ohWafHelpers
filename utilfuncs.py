@@ -315,7 +315,7 @@ def guess_libplatform_location(conf):
             '{options.libplatform}/install/{env.LINN_HOST_PLATFORM}-{debugmode_tc}/libplatform/bin/',
             'dependencies/{env.LINN_HOST_PLATFORM}/libplatform-host/libplatform/bin'
         ],
-        message='Specify --libplatform')
+        message='Specify --libplatform (host build not found for %s)' % conf.env.LINN_HOST_PLATFORM)
     )
     if conf.options.dest_platform.startswith('Linux-'):
         conf.env.LIB_PLATFORM = ['rt']
