@@ -104,7 +104,12 @@ def configure_toolchain(conf):
     if conf.options.dest_platform in ['Windows-x86', 'Windows-x64']:
         if (conf.options.dest_platform == 'Windows-x64'):
             conf.env.MSVC_TARGETS = ['x64']
-        conf.load('msvc', funs='no_autodetect')
+        # Let waf's msvc tool auto-detect the toolchain itself (registry scan +
+        # vswhere.exe, honouring MSVC_TARGETS above), instead of relying on the
+        # invoking shell already having run vcvarsall.bat (e.g. a VS "Native
+        # Tools Command Prompt"). This makes `waf configure` work from any
+        # terminal (cmd.exe, PowerShell, git-bash, ...) with zero setup.
+        conf.load('msvc')
         conf.env.append_value('CXXFLAGS',['/EHa', '/DDEFINE_TRACE', '/DDEFINE_'+platform_info['endian']+'_ENDIAN', '/D_CRT_SECURE_NO_WARNINGS'])
         if conf.options.debugmode == 'Debug':
             conf.env.append_value('CXXFLAGS',['/MTd', '/Z7', '/Od', '/RTC1', '/DDEFINE_DEBUG'])
